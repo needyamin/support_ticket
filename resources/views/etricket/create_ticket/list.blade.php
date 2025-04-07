@@ -7,10 +7,9 @@
             <div class="card">
               <div class="card-body">
 
-<div class="mb-3">
-  <h1>Tickets</h1>
-  <a href="{{ route('etricket.create') }}" class="btn btn-primary">Create New Ticket</a>
-</div>
+<a href="{{ route('etricket.create') }}" class="btn btn-sm btn-primary">Create New Ticket</a>
+
+<div class="mb-3"><h1>E-Tickets</h1></div>
 
 @if(session('success'))
   <div class="alert alert-success">{{ session('success') }}</div>
