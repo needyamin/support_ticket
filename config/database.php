@@ -3,7 +3,6 @@
 use Illuminate\Support\Str;
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Database Connection Name
@@ -30,7 +29,6 @@ return [
     */
 
     'connections' => [
-
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
@@ -112,6 +110,24 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'otithee_administrator' => [
+            'driver' => 'mysql',
+            'host' => env('DB_OTITHEE_ADMIN_HOST', '127.0.0.1'),
+            'port' => env('DB_OTITHEE_ADMIN_PORT', '3306'),
+            'database' => env('DB_OTITHEE_ADMIN_DATABASE', 'otithee_administrator'),
+            'username' => env('DB_OTITHEE_ADMIN_USERNAME', 'root'),
+            'password' => env('DB_OTITHEE_ADMIN_PASSWORD', ''),
+            'unix_socket' => env('DB_OTITHEE_ADMIN_SOCKET', ''),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
     ],
 
     /*
@@ -142,7 +158,6 @@ return [
     */
 
     'redis' => [
-
         'client' => env('REDIS_CLIENT', 'phpredis'),
 
         'options' => [
@@ -168,7 +183,5 @@ return [
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_CACHE_DB', '1'),
         ],
-
     ],
-
 ];

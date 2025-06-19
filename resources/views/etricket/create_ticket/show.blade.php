@@ -67,23 +67,33 @@
                         </div>
                     @endif
                     @forelse($ticket->replies as $reply)
+                        @php
+                            // Use email, id, or name for hashing (in that order)
+                            $colorSeed = $reply->user->email ?? $reply->user->id ?? $reply->user->name ?? 'user';
+                            $hash = crc32($colorSeed);
+                            // Spread hue around the color wheel (0-359)
+                            $hue = $hash % 360;
+                            // Use fixed saturation and lightness for consistency and readability
+                            $avatarBg = "background:hsl($hue, 65%, 60%);";
+                        @endphp
                         <div class="card mb-3 border-0 bg-white shadow-sm rounded-3">
                             <div class="card-body d-flex align-items-start">
                                 <div class="me-3">
-                                    <div class="rounded-circle bg-gradient text-white d-flex align-items-center justify-content-center shadow" style="width: 48px; height: 48px; font-size: 1.3rem; background: linear-gradient(135deg, #4f8cff 0%, #6dd5ed 100%);">
+                                    <div class="rounded-circle bg-gradient text-white d-flex align-items-center justify-content-center shadow"
+                                         style="width: 48px; height: 48px; font-size: 1.3rem; {{ $avatarBg }}">
                                         {{ strtoupper(substr($reply->user->name, 0, 1)) }}
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="fw-semibold fs-6">
+                                        <span class="fw-bold fs-6">
                                             {{ $reply->user->name }}
                                         </span>
                                         <span class="text-muted small">
-                                            <i class="bi bi-clock me-1"></i> {{ $reply->created_at->format('M d, Y H:i') }}
+                                            <i class="bi bi-clock me-1"></i> {{ $reply->created_at->format('M d, Y h:i A') }}
                                         </span>
                                     </div>
-                                    <div class="fs-6">{{ $reply->message }}</div>
+                                    <div class="fs-6 text-break" style="white-space: pre-line; word-break: break-word;">{{ $reply->message }}</div>
                                 </div>
                             </div>
                         </div>
@@ -109,9 +119,7 @@
                             </form>
                         </div>
                     </div>
-                    <button class="btn btn-primary rounded-circle shadow position-fixed d-none d-md-flex align-items-center justify-content-center" style="bottom: 40px; right: 40px; width: 60px; height: 60px; z-index: 1050;" data-bs-toggle="modal" data-bs-target="#replyModal" title="Quick Reply">
-                        <i class="bi bi-chat-dots fs-3"></i>
-                    </button>
+        
                     <!-- Modal for quick reply (optional, can be implemented if needed) -->
                 </div>
 
