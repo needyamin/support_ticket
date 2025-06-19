@@ -18,6 +18,14 @@ class CreateTricketController extends Controller
     }
 
     /**
+     * Helper: Check if current user is admin or moderator
+     */
+    protected function isAdminOrModerator()
+    {
+        return auth()->user() && in_array(auth()->user()->group, ['admin', 'moderator']);
+    }
+
+    /**
      * Display a list of tickets.
      */
     public function index()
@@ -32,6 +40,9 @@ class CreateTricketController extends Controller
      */
     public function create()
     {
+        if (!$this->isAdminOrModerator()) {
+            abort(403, 'Only admin or moderator can create tickets.');
+        }
         return view('etricket.create_ticket.create');
     }
 
@@ -40,19 +51,17 @@ class CreateTricketController extends Controller
      */
     public function store(Request $request)
     {
+        if (!$this->isAdminOrModerator()) {
+            abort(403, 'Only admin or moderator can create tickets.');
+        }
         $data = $request->validate([
             'subject'     => 'required|string|max:255',
             'description' => 'required|string',
             'priority'    => 'nullable|in:low,medium,high',
         ]);
-
-        // Set default values.
         $data['user_id'] = auth()->id();
         $data['status']  = 'open';
-
-        // Create the ticket.
         $ticket = Ticket::create($data);
-
         return redirect()->route('etricket.show', $ticket->id)
                          ->with('success', 'Ticket created successfully.');
     }
@@ -73,7 +82,9 @@ class CreateTricketController extends Controller
      */
     public function edit(Ticket $ticket)
     {
-
+        if (!$this->isAdmin()) {
+            abort(403, 'Only admin can edit tickets.');
+        }
         return view('etricket.create_ticket.edit', compact('ticket'));
     }
 
@@ -82,7 +93,9 @@ class CreateTricketController extends Controller
      */
     public function update(Request $request, Ticket $ticket)
     {
-        
+        if (!$this->isAdmin()) {
+            abort(403, 'Only admin can update tickets.');
+        }
         $data = $request->validate([
             'subject'     => 'required|string|max:255',
             'description' => 'required|string',
@@ -90,9 +103,7 @@ class CreateTricketController extends Controller
             'priority'    => 'required|in:low,medium,high',
             'assigned_to' => 'nullable|exists:users,id'
         ]);
-
         $ticket->update($data);
-
         return redirect()->route('etricket.show', $ticket->id)
                          ->with('success', 'Ticket updated successfully.');
     }
@@ -102,6 +113,9 @@ class CreateTricketController extends Controller
      */
     public function destroy(Ticket $ticket)
     {
+        if (!$this->isAdmin()) {
+            abort(403, 'Only admin can delete tickets.');
+        }
         $ticket->delete();
         return redirect()->route('etricket.index')
                          ->with('success', 'Ticket deleted successfully.');

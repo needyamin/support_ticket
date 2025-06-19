@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $isAdmin = Auth::check() && Auth::user()->group === 'admin';
+    $canCreate = Auth::check() && Auth::user()->isAdminOrModerator();
+@endphp
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-12">
@@ -8,9 +12,11 @@
                 <h2 class="fw-bold text-primary mb-0">
                     <i class="fas fa-list me-2"></i> Support Tickets
                 </h2>
-                <a href="{{ route('etricket.create') }}" class="btn btn-success">
-                    <i class="fas fa-plus-circle me-1"></i> New Ticket
-                </a>
+                @if($canCreate)
+                    <a href="{{ route('etricket.create') }}" class="btn btn-success">
+                        <i class="fas fa-plus-circle me-1"></i> New Ticket
+                    </a>
+                @endif
             </div>
 
             @if(session('success'))
@@ -64,16 +70,18 @@
                                                     <a href="{{ route('etricket.show', $ticket->id) }}" class="btn btn-sm btn-primary" title="View">
                                                         <i class="bi bi-eye"></i>
                                                     </a>
-                                                    <a href="{{ route('etricket.edit', $ticket->id) }}" class="btn btn-sm btn-warning" title="Edit">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </a>
-                                                    <form action="{{ route('etricket.destroy', $ticket->id) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this ticket?')" type="submit" title="Delete">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </form>
+                                                    @if($isAdmin)
+                                                        <a href="{{ route('etricket.edit', $ticket->id) }}" class="btn btn-sm btn-warning" title="Edit">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </a>
+                                                        <form action="{{ route('etricket.destroy', $ticket->id) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this ticket?')" type="submit" title="Delete">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -90,9 +98,11 @@
                 <div class="text-center py-5">
                     <i class="fas fa-ticket-alt fa-3x text-muted mb-3"></i>
                     <p class="h5 text-muted">No tickets found.</p>
-                    <a href="{{ route('etricket.create') }}" class="btn btn-success mt-3">
-                        Create Your First Ticket
-                    </a>
+                    @if($canCreate)
+                        <a href="{{ route('etricket.create') }}" class="btn btn-success mt-3">
+                            Create Your First Ticket
+                        </a>
+                    @endif
                 </div>
             @endif
         </div>

@@ -21,51 +21,58 @@
                     </ul>
                 </div>
             @endif
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <form action="{{ route('etricket.update', $ticket->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="mb-3">
-                            <label for="subject" class="form-label">Subject</label>
-                            <input type="text" name="subject" id="subject" class="form-control form-control-lg" value="{{ old('subject', $ticket->subject) }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea name="description" id="description" rows="5" class="form-control" required>{{ old('description', $ticket->description) }}</textarea>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <select name="status" id="status" class="form-select" required>
-                                    <option value="open" {{ $ticket->status == 'open' ? 'selected' : '' }}>Open</option>
-                                    <option value="pending" {{ $ticket->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="closed" {{ $ticket->status == 'closed' ? 'selected' : '' }}>Closed</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="priority" class="form-label">Priority</label>
-                                <select name="priority" id="priority" class="form-select" required>
-                                    <option value="low" {{ $ticket->priority == 'low' ? 'selected' : '' }}>Low</option>
-                                    <option value="medium" {{ $ticket->priority == 'medium' ? 'selected' : '' }}>Medium</option>
-                                    <option value="high" {{ $ticket->priority == 'high' ? 'selected' : '' }}>High</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="assigned_to" class="form-label">Assigned To (User ID)</label>
-                            <input type="number" name="assigned_to" id="assigned_to" class="form-control" value="{{ old('assigned_to', $ticket->assigned_to) }}" placeholder="Enter user ID">
-                            <div class="form-text">Leave empty to unassign the ticket</div>
-                        </div>
-                        <div class="d-flex justify-content-end gap-2 mt-4">
-                            <a href="{{ route('etricket.show', $ticket->id) }}" class="btn btn-outline-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i> Update Ticket
-                            </button>
-                        </div>
-                    </form>
+            @php $isAdmin = Auth::check() && Auth::user()->group === 'admin'; @endphp
+            @if(!$isAdmin)
+                <div class="alert alert-warning text-center mt-5">
+                    <i class="bi bi-exclamation-triangle me-1"></i> Only admin users can edit tickets.
                 </div>
-            </div>
+            @else
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <form action="{{ route('etricket.update', $ticket->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subject</label>
+                                <input type="text" name="subject" id="subject" class="form-control form-control-lg" value="{{ old('subject', $ticket->subject) }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea name="description" id="description" rows="5" class="form-control" required>{{ old('description', $ticket->description) }}</textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select name="status" id="status" class="form-select" required>
+                                        <option value="open" {{ $ticket->status == 'open' ? 'selected' : '' }}>Open</option>
+                                        <option value="pending" {{ $ticket->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="closed" {{ $ticket->status == 'closed' ? 'selected' : '' }}>Closed</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="priority" class="form-label">Priority</label>
+                                    <select name="priority" id="priority" class="form-select" required>
+                                        <option value="low" {{ $ticket->priority == 'low' ? 'selected' : '' }}>Low</option>
+                                        <option value="medium" {{ $ticket->priority == 'medium' ? 'selected' : '' }}>Medium</option>
+                                        <option value="high" {{ $ticket->priority == 'high' ? 'selected' : '' }}>High</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="assigned_to" class="form-label">Assigned To (User ID)</label>
+                                <input type="number" name="assigned_to" id="assigned_to" class="form-control" value="{{ old('assigned_to', $ticket->assigned_to) }}" placeholder="Enter user ID">
+                                <div class="form-text">Leave empty to unassign the ticket</div>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2 mt-4">
+                                <a href="{{ route('etricket.show', $ticket->id) }}" class="btn btn-outline-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i> Update Ticket
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>

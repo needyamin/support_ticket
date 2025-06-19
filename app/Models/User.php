@@ -33,4 +33,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Check if user is admin or moderator.
+     */
+    public function isAdminOrModerator()
+    {
+        return in_array($this->group, ['admin', 'moderator']);
+    }
 }
