@@ -15,6 +15,6 @@ Route::get('/dashboard', [App\Http\Controllers\CreateTricketController::class, '
 // tricket
 Route::get('/create-tricket', [App\Http\Controllers\CreateTricketController::class, 'create'])->name('etricket.create');
 
-Route::resource('etricket', CreateTricketController::class);
+Route::resource('etricket', CreateTricketController::class)->parameters(['etricket' => 'ticket']);
 Route::post('etricket/{ticket}/reply', [CreateTricketController::class, 'addReply'])->name('etricket.addReply');
 Route::post('etricket/{ticket}/attachment', [CreateTricketController::class, 'addAttachment'])->name('etricket.addAttachment');
