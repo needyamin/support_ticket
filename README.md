@@ -40,12 +40,12 @@ A modern, secure, and feature-rich support ticket system built with Laravel. Des
 
 Below are some screenshots of the Support Ticket System in action:
 
-![Dashboard](https://github.com/user-attachments/assets/9d798246-bb7d-471c-80d5-f41d13500140)
-![Ticket List](https://github.com/user-attachments/assets/0cb8242c-eab3-4a69-bb06-b480d7288780)
 ![Attachment Upload](https://github.com/user-attachments/assets/070bafac-eea2-4e14-9ba7-dae22d4df4fb)
 ![User Management](https://github.com/user-attachments/assets/860bdaa5-d44b-4349-aed5-91640c9bc68f)
-![Ticket Details](https://github.com/user-attachments/assets/431d24b1-f86d-469d-9dd8-8d42d086b094)
 ![Notification System](https://github.com/user-attachments/assets/a69f36ae-3d2a-4d35-b34e-3a2023035a09)
+![Dashboard](https://github.com/user-attachments/assets/9d798246-bb7d-471c-80d5-f41d13500140)
+![Ticket List](https://github.com/user-attachments/assets/0cb8242c-eab3-4a69-bb06-b480d7288780)
+![Ticket Details](https://github.com/user-attachments/assets/431d24b1-f86d-469d-9dd8-8d42d086b094)
 
 ## License
 MIT
