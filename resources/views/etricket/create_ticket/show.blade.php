@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-light min-vh-100 py-5">
+<div class="bg-light min-vh-100 py-3">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-9 col-md-11">
@@ -132,7 +132,29 @@
                     </div>
                     @forelse($ticket->attachments as $attachment)
                         <div class="d-flex align-items-center mb-2 ps-2">
-                            <i class="bi bi-file-earmark-text attachment-icon fs-5 text-primary"></i>
+                            @php
+                                $ext = strtolower(pathinfo($attachment->file_path, PATHINFO_EXTENSION));
+                                $isImage = in_array($ext, ['jpg','jpeg','png','gif','webp','bmp','svg']);
+                                $isPdf = $ext === 'pdf';
+                                $isVideo = in_array($ext, ['mp4','mov','avi','wmv','mpeg']);
+                            @endphp
+                            @if($isImage)
+                                <a href="{{ asset($attachment->file_path) }}" target="_blank" class="me-2">
+                                    <img src="{{ asset($attachment->file_path) }}" alt="Attachment" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid #ddd;">
+                                </a>
+                            @elseif($isPdf)
+                                <a href="{{ asset($attachment->file_path) }}" target="_blank" class="me-2">
+                                    <i class="bi bi-file-earmark-pdf fs-2 text-danger"></i>
+                                </a>
+                            @elseif($isVideo)
+                                <a href="{{ asset($attachment->file_path) }}" target="_blank" class="me-2">
+                                    <i class="bi bi-file-earmark-play fs-2 text-primary"></i>
+                                </a>
+                            @else
+                                <a href="{{ asset($attachment->file_path) }}" target="_blank" class="me-2">
+                                    <i class="bi bi-file-earmark-text fs-2 text-secondary"></i>
+                                </a>
+                            @endif
                             <a href="{{ asset($attachment->file_path) }}" target="_blank" class="text-decoration-none ms-2 fw-semibold">
                                 Attachment #{{ $attachment->id }}
                             </a>
