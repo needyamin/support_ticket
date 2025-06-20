@@ -18,7 +18,7 @@
     @stack('styles')
     <style>
         .modern-navbar {
-            background: linear-gradient(90deg, #4f8cff 0%, #6dd5ed 100%);
+            background: linear-gradient(90deg, #f44040 0%,#019b8d 100%);
         }
         .modern-navbar .navbar-brand, .modern-navbar .nav-link, .modern-navbar .dropdown-toggle {
             color: #fff !important;

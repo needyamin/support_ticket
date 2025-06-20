@@ -59,8 +59,15 @@
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="assigned_to" class="form-label">Assigned To (User ID)</label>
-                                <input type="number" name="assigned_to" id="assigned_to" class="form-control" value="{{ old('assigned_to', $ticket->assigned_to) }}" placeholder="Enter user ID">
+                                <label for="assigned_to" class="form-label">Assigned To</label>
+                                <select name="assigned_to" id="assigned_to" class="form-select">
+                                    <option value="">-- Unassigned --</option>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}" {{ (old('assigned_to', $ticket->assigned_to) == $user->id) ? 'selected' : '' }}>
+                                            {{ $user->name }} ({{ $user->email }})
+                                        </option>
+                                    @endforeach
+                                </select>
                                 <div class="form-text">Leave empty to unassign the ticket</div>
                             </div>
                             <div class="d-flex justify-content-end gap-2 mt-4">

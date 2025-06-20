@@ -113,7 +113,8 @@ class CreateTricketController extends Controller
         if (!$this->isAdmin()) {
             abort(403, 'Only admin can edit tickets.');
         }
-        return view('etricket.create_ticket.edit', compact('ticket'));
+        $users = \App\Models\User::orderBy('name')->get();
+        return view('etricket.create_ticket.edit', compact('ticket', 'users'));
     }
 
     /**
@@ -131,10 +132,18 @@ class CreateTricketController extends Controller
             'priority'    => 'required|in:low,medium,high',
             'assigned_to' => 'nullable|exists:users,id'
         ]);
+        $oldAssignedTo = $ticket->assigned_to;
         $oldStatus = $ticket->status;
         $ticket->update($data);
+        // Notify if assigned user changed
+        if ($oldAssignedTo != $ticket->assigned_to && $ticket->assigned_to) {
+            $assignedUser = $ticket->assignedToUser;
+            if ($assignedUser && $assignedUser->id !== auth()->id()) {
+                $assignedUser->notify(new \App\Notifications\TicketCreated($ticket));
+            }
+        }
+        // Notify if status changed
         if ($oldStatus !== $data['status']) {
-            // Notify ticket owner and assigned user (except the updater)
             $notifiables = collect([$ticket->user, $ticket->assignedToUser])->filter(function($user) {
                 return $user && $user->id !== auth()->id();
             })->unique('id');
