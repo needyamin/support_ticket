@@ -1,19 +1,16 @@
 # Deny access to everything by default
 <FilesMatch ".*">
-    Order Deny,Allow
-    Deny from all
+    Require all denied
 </FilesMatch>
 
 # Allow only specific file types (images, pdf, video)
 <FilesMatch "\.(jpe?g|png|gif|webp|bmp|svg|pdf|mp4|mov|avi|wmv|mpeg)$">
-    Order Allow,Deny
-    Allow from all
+    Require all granted
 </FilesMatch>
 
-# Prevent script execution in this directory
-RemoveHandler .php .php5 .php7 .phtml .pl .py .jsp .asp .sh .cgi
-php_flag engine off
-AddType text/plain .php .php5 .php7 .phtml .pl .py .jsp .asp .sh .cgi
+# Prevent script execution (commented out if causing issues)
+# RemoveHandler .php .php5 .php7 .phtml .pl .py .jsp .asp .sh .cgi
+# AddType text/plain .php .php5 .php7 .phtml .pl .py .jsp .asp .sh .cgi
 
-# Extra security: disable directory listing
+# Disable directory listing
 Options -Indexes
