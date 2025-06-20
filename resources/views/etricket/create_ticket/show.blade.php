@@ -152,12 +152,12 @@
                                 @csrf
                                 <div class="mb-3">
                                     <label for="attachment" class="form-label custom-file-label btn btn-outline-primary">
-                                        <i class="bi bi-upload me-1"></i> Choose File
-                                        <input type="file" name="attachment" id="attachment" class="custom-file-input" required>
+                                        <i class="bi bi-upload me-1"></i> Choose Files
+                                        <input type="file" name="attachment[]" id="attachment" class="custom-file-input" required multiple>
                                     </label>
                                 </div>
                                 <button type="submit" class="btn btn-primary shadow">
-                                    <i class="bi bi-upload me-1"></i> Upload Attachment
+                                    <i class="bi bi-upload me-1"></i> Upload Attachment(s)
                                 </button>
                             </form>
                         </div>

@@ -144,35 +144,30 @@ class CreateTricketController extends Controller
     public function addAttachment(Request $request, Ticket $ticket)
     {
         $request->validate([
-            'attachment' => 'required|file|max:2048'
+            'attachment' => 'required',
+            'attachment.*' => 'file|max:2048',
         ]);
-    
-        if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
-            $file = $request->file('attachment');
-            $directory = public_path('ticket_attachments');  // Public folder for attachment storage
-    
-            // Ensure the directory exists and has correct permissions
+
+        if ($request->hasFile('attachment')) {
+            $files = $request->file('attachment');
+            $directory = public_path('ticket_attachments');
             if (!is_dir($directory)) {
-                mkdir($directory, 0755, true);  // Creates directory with proper permissions
+                mkdir($directory, 0755, true);
             }
-    
-            // Generate a unique filename
-            $filename = uniqid() . '_' . $file->getClientOriginalName();
-    
-            // Move the file to the public/ticket_attachments folder
-            $filePath = $file->move($directory, $filename);
-    
-            // Save the file path to the database
-            TicketAttachment::create([
-                'ticket_id' => $ticket->id,
-                'user_id'   => auth()->id(),
-                'file_path' => 'ticket_attachments/' . $filename,  // Save relative path
-            ]);
-    
+            foreach ($files as $file) {
+                if ($file->isValid()) {
+                    $filename = uniqid() . '_' . $file->getClientOriginalName();
+                    $file->move($directory, $filename);
+                    TicketAttachment::create([
+                        'ticket_id' => $ticket->id,
+                        'user_id'   => auth()->id(),
+                        'file_path' => 'ticket_attachments/' . $filename,
+                    ]);
+                }
+            }
             return redirect()->route('etricket.show', $ticket->id)
-                             ->with('success', 'Attachment added successfully.');
+                             ->with('success', 'Attachments added successfully.');
         }
-    
         return back()->withErrors(['attachment' => 'File upload failed. Please try again.']);
     }
     
