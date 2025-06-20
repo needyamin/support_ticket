@@ -194,7 +194,10 @@ class CreateTricketController extends Controller
     {
         $request->validate([
             'attachment' => 'required',
-            'attachment.*' => 'file|max:2048',
+            'attachment.*' => 'file|max:20480|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/bmp,image/svg+xml,application/pdf,video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv,video/mpeg',
+        ], [
+            'attachment.*.mimetypes' => 'Only images (jpeg, png, gif, webp, bmp, svg), PDF, and video files (mp4, mov, avi, wmv, mpeg) are allowed.',
+            'attachment.*.max' => 'Each file must not exceed 20MB.'
         ]);
 
         if ($request->hasFile('attachment')) {

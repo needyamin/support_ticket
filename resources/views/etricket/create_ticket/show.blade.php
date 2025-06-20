@@ -148,6 +148,11 @@
                                     <i class="bi bi-exclamation-circle me-1"></i> {{ $errors->first('attachment') }}
                                 </div>
                             @endif
+                            @if($errors->has('attachment.*'))
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-circle me-1"></i> {{ $errors->first('attachment.*') }}
+                                </div>
+                            @endif
                             <form action="{{ route('etricket.addAttachment', $ticket->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="mb-3">
