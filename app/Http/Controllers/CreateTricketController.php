@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Models\TicketAttachment;
+use App\Notifications\TicketCreated;
+use App\Notifications\TicketReplied;
+use App\Notifications\TicketAttachmentAdded;
+use App\Notifications\TicketStatusChanged;
 
 class CreateTricketController extends Controller
 {
@@ -22,7 +26,22 @@ class CreateTricketController extends Controller
      */
     protected function isAdminOrModerator()
     {
-        return auth()->user() && in_array(auth()->user()->group, ['admin', 'moderator']);
+        $user = auth()->user();
+        if (!$user) return false;
+        // Accept both string and int for group, and trim spaces
+        $group = is_string($user->group) ? strtolower(trim($user->group)) : $user->group;
+        return in_array($group, ['admin', 'moderator'], true);
+    }
+
+    /**
+     * Helper: Check if current user is admin
+     */
+    protected function isAdmin()
+    {
+        $user = auth()->user();
+        if (!$user) return false;
+        $group = is_string($user->group) ? strtolower(trim($user->group)) : $user->group;
+        return $group === 'admin';
     }
 
     /**
@@ -62,6 +81,15 @@ class CreateTricketController extends Controller
         $data['user_id'] = auth()->id();
         $data['status']  = 'open';
         $ticket = Ticket::create($data);
+        // Notify the assigned user (if any) or all admins/moderators
+        if ($ticket->assigned_to) {
+            $ticket->assignedToUser?->notify(new TicketCreated($ticket));
+        } else {
+            // Notify all admins/moderators
+            \App\Models\User::whereIn('group', ['admin', 'moderator'])->get()->each(function($user) use ($ticket) {
+                $user->notify(new TicketCreated($ticket));
+            });
+        }
         return redirect()->route('etricket.show', $ticket->id)
                          ->with('success', 'Ticket created successfully.');
     }
@@ -103,7 +131,17 @@ class CreateTricketController extends Controller
             'priority'    => 'required|in:low,medium,high',
             'assigned_to' => 'nullable|exists:users,id'
         ]);
+        $oldStatus = $ticket->status;
         $ticket->update($data);
+        if ($oldStatus !== $data['status']) {
+            // Notify ticket owner and assigned user (except the updater)
+            $notifiables = collect([$ticket->user, $ticket->assignedToUser])->filter(function($user) {
+                return $user && $user->id !== auth()->id();
+            })->unique('id');
+            foreach ($notifiables as $user) {
+                $user->notify(new TicketStatusChanged($ticket, $oldStatus, $data['status']));
+            }
+        }
         return redirect()->route('etricket.show', $ticket->id)
                          ->with('success', 'Ticket updated successfully.');
     }
@@ -133,7 +171,18 @@ class CreateTricketController extends Controller
         $data['ticket_id'] = $ticket->id;
         $data['user_id']   = auth()->id();
 
-        TicketReply::create($data);
+        $reply = TicketReply::create($data);
+
+        // Notify ticket owner, assigned user, and all admins (except the replier)
+        $adminUsers = \App\Models\User::where('group', 'admin')->get();
+        $notifiables = collect([$ticket->user, $ticket->assignedToUser])
+            ->merge($adminUsers)
+            ->filter(function($user) {
+                return $user && $user->id !== auth()->id();
+            })->unique('id');
+        foreach ($notifiables as $user) {
+            $user->notify(new TicketReplied($reply));
+        }
 
         return redirect()->route('etricket.show', $ticket->id)
                          ->with('success', 'Reply added successfully.');
@@ -158,11 +207,18 @@ class CreateTricketController extends Controller
                 if ($file->isValid()) {
                     $filename = uniqid() . '_' . $file->getClientOriginalName();
                     $file->move($directory, $filename);
-                    TicketAttachment::create([
+                    $attachment = TicketAttachment::create([
                         'ticket_id' => $ticket->id,
                         'user_id'   => auth()->id(),
                         'file_path' => 'ticket_attachments/' . $filename,
                     ]);
+                    // Notify ticket owner and assigned user (except the uploader)
+                    $notifiables = collect([$ticket->user, $ticket->assignedToUser])->filter(function($user) {
+                        return $user && $user->id !== auth()->id();
+                    })->unique('id');
+                    foreach ($notifiables as $user) {
+                        $user->notify(new TicketAttachmentAdded($attachment));
+                    }
                 }
             }
             return redirect()->route('etricket.show', $ticket->id)

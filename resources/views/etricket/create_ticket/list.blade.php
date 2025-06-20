@@ -2,10 +2,17 @@
 
 @section('content')
 @php
-    $isAdmin = Auth::check() && Auth::user()->group === 'admin';
+    $isAdmin = Auth::check() && (strtolower(trim(Auth::user()->group)) === 'admin');
     $canCreate = Auth::check() && Auth::user()->isAdminOrModerator();
 @endphp
+
 <div class="container py-4">
+
+{{-- Debug: Show current user group --}}
+{{-- @if(Auth::check())
+    <div class="alert alert-info small">Your group: "{{ Auth::user()->group }}"</div>
+@endif --}}
+
     <div class="row justify-content-center">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">

@@ -75,6 +75,38 @@
                                     </form>
                                 </div>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-bell fs-5"></i>
+                                    @php $unread = Auth::user()->unreadNotifications()->count(); @endphp
+                                    @if($unread > 0)
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ $unread }}</span>
+                                    @endif
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow rounded-3 mt-2 p-0" aria-labelledby="notificationDropdown" style="min-width: 320px; max-width: 350px;">
+                                    <li class="dropdown-header bg-light fw-bold py-2 px-3 border-bottom">Notifications</li>
+                                    @forelse(Auth::user()->unreadNotifications->take(10) as $notification)
+                                        <li>
+                                            <a href="{{ route('etricket.show', $notification->data['ticket_id'] ?? 0) }}" class="dropdown-item py-2 px-3 small">
+                                                <div class="fw-semibold">{{ $notification->data['subject'] ?? 'Ticket' }}</div>
+                                                <div class="text-muted small">{{ $notification->data['message'] ?? '' }}</div>
+                                                <div class="text-end text-muted small">{{ $notification->created_at->diffForHumans() }}</div>
+                                            </a>
+                                        </li>
+                                    @empty
+                                        <li><span class="dropdown-item text-muted small">No new notifications.</span></li>
+                                    @endforelse
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{{ route('notifications.markAllRead') }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <button class="dropdown-item text-center small text-primary" type="submit">
+                                                <i class="bi bi-check2-all me-1"></i> Mark all as read
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
                         @endguest
                     </ul>
                 </div>

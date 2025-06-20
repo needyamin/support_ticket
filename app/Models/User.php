@@ -9,7 +9,6 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
- 
     use HasFactory, Notifiable;
 
     protected $fillable = [
@@ -39,6 +38,7 @@ class User extends Authenticatable
      */
     public function isAdminOrModerator()
     {
-        return in_array($this->group, ['admin', 'moderator']);
+        $group = is_string($this->group) ? strtolower(trim($this->group)) : $this->group;
+        return in_array($group, ['admin', 'moderator'], true);
     }
 }
