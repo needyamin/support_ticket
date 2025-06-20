@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateTricketController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UserManagementController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,3 +23,8 @@ Route::post('etricket/{ticket}/attachment', [CreateTricketController::class, 'ad
 
 // notifications
 Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
+
+// admin user management
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('users', UserManagementController::class);
+});

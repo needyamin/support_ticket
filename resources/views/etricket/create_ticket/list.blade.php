@@ -19,11 +19,18 @@
                 <h2 class="fw-bold text-primary mb-0">
                     <i class="fas fa-list me-2"></i> Support Tickets
                 </h2>
-                @if($canCreate)
-                    <a href="{{ route('etricket.create') }}" class="btn btn-success">
-                        <i class="fas fa-plus-circle me-1"></i> New Ticket
-                    </a>
-                @endif
+                <div class="d-flex align-items-center gap-2">
+                    @if($canCreate)
+                        <a href="{{ route('etricket.create') }}" class="btn btn-success">
+                            <i class="fas fa-plus-circle me-1"></i> New Ticket
+                        </a>
+                    @endif
+                    @if($isAdmin)
+                        <a href="{{ route('admin.users.index') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-people"></i> Manage Users
+                        </a>
+                    @endif
+                </div>
             </div>
 
             @if(session('success'))
